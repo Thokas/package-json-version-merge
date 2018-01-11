@@ -1,0 +1,13 @@
+{
+  "name": "package-json-interaktiv-merge",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {},
+  "bin": {
+    "package-json-interaktiv-merge": "bin/package-json-interaktiv-merge"
+  },
+  "dependencies": {
+    "glob": "^7.1.2",
+    "jsonfile": "^4.0.0"
+  }
+}

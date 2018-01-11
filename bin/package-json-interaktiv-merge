@@ -1,0 +1,68 @@
+#!/usr/bin/env node
+// -*- js -*-
+
+const glob     = require("glob");
+const jsonfile = require('jsonfile');
+
+
+var args           = process.argv.slice(2);
+var base_json_path = args.shift();
+
+var base_json = jsonfile.readFileSync(base_json_path);
+
+args.forEach(function(file_pattern){
+  var files = glob.sync(file_pattern);
+
+  files.forEach(function(file){
+    var extending_json = jsonfile.readFileSync(file);
+    if(!'interaktiv_setup' in extending_json){
+      return;
+    }
+
+    if(!'interaktiv_setup' in base_json){
+      base_json.interaktiv_setup = {};
+    }
+    if(!'packages' in base_json.interaktiv_setup){
+      base_json.interaktiv_setup.packages = [];
+    }
+    if(!'javascript_lib_files' in base_json.interaktiv_setup){
+      base_json.interaktiv_setup.javascript_lib_files = [];
+    }
+    if(!'javascript_direct_files' in base_json.interaktiv_setup){
+      base_json.interaktiv_setup.javascript_direct_files = [];
+    }
+
+    if('packages' in extending_json.interaktiv_setup){
+      //noinspection JSUnresolvedVariable
+      extending_json.interaktiv_setup.packages.forEach(function(package_name){
+        if(!package_name in base_json.interaktiv_setup.packages){
+          base_json.interaktiv_setup.packages.push(package_name);
+        }
+      });
+    }
+    if('javascript_lib_files' in extending_json.interaktiv_setup){
+      //noinspection JSUnresolvedVariable
+      extending_json.interaktiv_setup.javascript_lib_files.forEach(function(lib_file){
+        if(!lib_file in base_json.interaktiv_setup.javascript_lib_files){
+          base_json.interaktiv_setup.javascript_lib_files.push(lib_file);
+        }
+      });
+    }
+    if('javascript_direct_files' in extending_json.interaktiv_setup){
+      //noinspection JSUnresolvedVariable
+      extending_json.interaktiv_setup.javascript_direct_files.forEach(function(js_file){
+        if(!js_file in base_json.interaktiv_setup.javascript_direct_files){
+          base_json.interaktiv_setup.javascript_direct_files.push(js_file);
+        }
+      });
+    }
+  });
+});
+
+jsonfile.writeFile(base_json_path, base_json, {spaces: 2}, function(err){
+  if(err){
+    return console.log(err);
+  }
+
+  console.log("package.json merged");
+});
