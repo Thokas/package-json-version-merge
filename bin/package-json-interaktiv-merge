@@ -19,23 +19,23 @@ args.forEach(function(file_pattern){
       return;
     }
 
-    if(!'interaktiv_setup' in base_json){
-      base_json.interaktiv_setup = {};
+    if(typeof base_json.interaktiv_setup === 'undefined'){
+      base_json['interaktiv_setup'] = {};
     }
-    if(!'packages' in base_json.interaktiv_setup){
-      base_json.interaktiv_setup.packages = [];
+    if(typeof base_json.interaktiv_setup.packages === 'undefined'){
+      base_json.interaktiv_setup['packages'] = [];
     }
-    if(!'javascript_lib_files' in base_json.interaktiv_setup){
-      base_json.interaktiv_setup.javascript_lib_files = [];
+    if(typeof base_json.interaktiv_setup.javascript_lib_files === 'undefined'){
+      base_json.interaktiv_setup['javascript_lib_files'] = [];
     }
-    if(!'javascript_direct_files' in base_json.interaktiv_setup){
-      base_json.interaktiv_setup.javascript_direct_files = [];
+    if(typeof base_json.interaktiv_setup.javascript_direct_files === 'undefined'){
+      base_json.interaktiv_setup['javascript_direct_files'] = [];
     }
 
     if('packages' in extending_json.interaktiv_setup){
       //noinspection JSUnresolvedVariable
       extending_json.interaktiv_setup.packages.forEach(function(package_name){
-        if(!package_name in base_json.interaktiv_setup.packages){
+        if(typeof base_json.interaktiv_setup.packages[package_name] === 'undefined'){
           base_json.interaktiv_setup.packages.push(package_name);
         }
       });
@@ -43,7 +43,7 @@ args.forEach(function(file_pattern){
     if('javascript_lib_files' in extending_json.interaktiv_setup){
       //noinspection JSUnresolvedVariable
       extending_json.interaktiv_setup.javascript_lib_files.forEach(function(lib_file){
-        if(!lib_file in base_json.interaktiv_setup.javascript_lib_files){
+        if(typeof base_json.interaktiv_setup.javascript_lib_files[lib_file] === 'undefined'){
           base_json.interaktiv_setup.javascript_lib_files.push(lib_file);
         }
       });
@@ -51,7 +51,7 @@ args.forEach(function(file_pattern){
     if('javascript_direct_files' in extending_json.interaktiv_setup){
       //noinspection JSUnresolvedVariable
       extending_json.interaktiv_setup.javascript_direct_files.forEach(function(js_file){
-        if(!js_file in base_json.interaktiv_setup.javascript_direct_files){
+        if(typeof base_json.interaktiv_setup.javascript_direct_files[js_file] === 'undefined'){
           base_json.interaktiv_setup.javascript_direct_files.push(js_file);
         }
       });
