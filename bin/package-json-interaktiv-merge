@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 // -*- js -*-
 
-const glob     = require("glob");
-const jsonfile = require('jsonfile');
+const glob             = require("glob");
+const fs               = require('fs');
+const jsonfile         = require('jsonfile');
+const semver           = require('semver');
+const semver_cmp_range = require('semver-compare-range');
 
 
 var args           = process.argv.slice(2);
@@ -17,6 +20,19 @@ args.forEach(function(file_pattern){
     var extending_json = jsonfile.readFileSync(file);
     if(!'interaktiv_setup' in extending_json){
       return;
+    }
+
+    if('devDependencies' in extending_json){
+      base_json.devDependencies = compair_dependencies(
+        base_json.devDependencies,
+        extending_json.devDependencies
+      );
+    }
+    if('dependencies' in extending_json){
+      base_json.dependencies = compair_dependencies(
+        base_json.dependencies,
+        extending_json.dependencies
+      );
     }
 
     if(typeof base_json.interaktiv_setup === 'undefined'){
@@ -66,3 +82,30 @@ jsonfile.writeFile(base_json_path, base_json, {spaces: 2}, function(err){
 
   console.log("package.json merged");
 });
+
+function compair_dependencies(base_dependencies, extending_dependencies){
+  if(typeof base_dependencies === 'undefined'){
+    base_dependencies = {};
+  }
+
+  Object.keys(extending_dependencies).forEach(function(lib_name){
+    var lib_version = extending_dependencies[lib_name];
+
+    if(base_dependencies && lib_name in base_dependencies){
+      var base_lib_version = base_dependencies[lib_name];
+      if(semver.validRange(lib_version) !== semver.validRange(base_lib_version)){
+        var valid_range_base   = semver.validRange(base_lib_version);
+        var valid_range_extend = semver.validRange(lib_version);
+
+        if(semver_cmp_range(valid_range_extend, valid_range_base) > 0){
+          base_dependencies[lib_name] = lib_version;
+        }
+      }
+    }
+    else{
+      base_dependencies[lib_name] = lib_version;
+    }
+  });
+
+  return base_dependencies;
+}

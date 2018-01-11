@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "glob": "^7.1.2",
-    "jsonfile": "^4.0.0"
+    "jsonfile": "^4.0.0",
+    "semver": "^5.4.1",
+    "semver-compare-range": "0.0.3"
   }
 }
