@@ -2,22 +2,21 @@
 // -*- js -*-
 
 const glob             = require("glob");
-const fs               = require('fs');
 const jsonfile         = require('jsonfile');
 const semver           = require('semver');
 const semver_cmp_range = require('semver-compare-range');
 
 
-var args           = process.argv.slice(2);
-var base_json_path = args.shift();
+let args           = process.argv.slice(2);
+let base_json_path = args.shift();
 
-var base_json = jsonfile.readFileSync(base_json_path);
+let base_json = jsonfile.readFileSync(base_json_path);
 
 args.forEach(function(file_pattern){
-  var files = glob.sync(file_pattern);
+  let files = glob.sync(file_pattern);
 
   files.forEach(function(file){
-    var extending_json = jsonfile.readFileSync(file);
+    let extending_json = jsonfile.readFileSync(file);
     if(!'interaktiv_setup' in extending_json){
       return;
     }
@@ -49,27 +48,21 @@ args.forEach(function(file_pattern){
     }
 
     if('packages' in extending_json.interaktiv_setup){
-      //noinspection JSUnresolvedVariable
-      extending_json.interaktiv_setup.packages.forEach(function(package_name){
-        if(typeof base_json.interaktiv_setup.packages[package_name] === 'undefined'){
-          base_json.interaktiv_setup.packages.push(package_name);
-        }
+      let packages = base_json.interaktiv_setup.packages.concat(extending_json.interaktiv_setup.packages);
+      base_json.interaktiv_setup.packages = packages.filter(function(elem, pos) {
+          return packages.indexOf(elem) === pos;
       });
     }
     if('javascript_lib_files' in extending_json.interaktiv_setup){
-      //noinspection JSUnresolvedVariable
-      extending_json.interaktiv_setup.javascript_lib_files.forEach(function(lib_file){
-        if(typeof base_json.interaktiv_setup.javascript_lib_files[lib_file] === 'undefined'){
-          base_json.interaktiv_setup.javascript_lib_files.push(lib_file);
-        }
+      let lib_files = base_json.interaktiv_setup.javascript_lib_files.concat(extending_json.interaktiv_setup.javascript_lib_files);
+      base_json.interaktiv_setup.javascript_lib_files = lib_files.filter(function(elem, pos) {
+          return lib_files.indexOf(elem) === pos;
       });
     }
     if('javascript_direct_files' in extending_json.interaktiv_setup){
-      //noinspection JSUnresolvedVariable
-      extending_json.interaktiv_setup.javascript_direct_files.forEach(function(js_file){
-        if(typeof base_json.interaktiv_setup.javascript_direct_files[js_file] === 'undefined'){
-          base_json.interaktiv_setup.javascript_direct_files.push(js_file);
-        }
+      let direct_files = base_json.interaktiv_setup.javascript_direct_files.concat(extending_json.interaktiv_setup.javascript_direct_files);
+      base_json.interaktiv_setup.javascript_direct_files = direct_files.filter(function(elem, pos) {
+          return direct_files.indexOf(elem) === pos;
       });
     }
   });
@@ -89,13 +82,13 @@ function compair_dependencies(base_dependencies, extending_dependencies){
   }
 
   Object.keys(extending_dependencies).forEach(function(lib_name){
-    var lib_version = extending_dependencies[lib_name];
+    let lib_version = extending_dependencies[lib_name];
 
     if(base_dependencies && lib_name in base_dependencies){
-      var base_lib_version = base_dependencies[lib_name];
+      let base_lib_version = base_dependencies[lib_name];
       if(semver.validRange(lib_version) !== semver.validRange(base_lib_version)){
-        var valid_range_base   = semver.validRange(base_lib_version);
-        var valid_range_extend = semver.validRange(lib_version);
+        let valid_range_base   = semver.validRange(base_lib_version);
+        let valid_range_extend = semver.validRange(lib_version);
 
         if(semver_cmp_range(valid_range_extend, valid_range_base) > 0){
           base_dependencies[lib_name] = lib_version;
