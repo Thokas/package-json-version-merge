@@ -47,6 +47,10 @@ args.forEach(function(file_pattern){
       base_json.interaktiv_setup['javascript_direct_files'] = [];
     }
 
+    if(!'interaktiv_setup' in extending_json){
+      return;
+    }
+
     if('packages' in extending_json.interaktiv_setup){
       let packages = base_json.interaktiv_setup.packages.concat(extending_json.interaktiv_setup.packages);
       base_json.interaktiv_setup.packages = packages.filter(function(elem, pos) {
